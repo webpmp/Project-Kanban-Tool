@@ -1,9 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
-import { Task, TaskType, Priority, TaskStatus, User } from '../types';
+import { Task, TaskType, Priority, TaskStatus, User, Comment } from '../types';
 import { PRIORITY_ORDER } from '../constants';
 import { enhanceTaskDescription, generateSubtasks } from '../services/geminiService';
-import { X, Sparkles, Plus, Trash2, CheckSquare, User as UserIcon, Loader2, Layers, Link as LinkIcon, ExternalLink, Flag, FileText } from 'lucide-react';
+import { X, Sparkles, Plus, Trash2, CheckSquare, User as UserIcon, Loader2, Layers, Link as LinkIcon, ExternalLink, Flag, FileText, Edit2 } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
 interface TaskModalProps {
@@ -12,6 +13,7 @@ interface TaskModalProps {
   task: Task | null; // If null, creating new
   allTasks: Task[];
   users: User[];
+  currentUser: User;
   onSave: (task: Task) => void;
   onDelete: (taskId: string) => void;
   swimlanes: { id: string; name: string }[];
@@ -23,6 +25,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   task,
   allTasks,
   users,
+  currentUser,
   onSave,
   onDelete,
   swimlanes,
@@ -38,6 +41,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   // Deliverable Inputs
   const [delTitle, setDelTitle] = useState('');
   const [delUrl, setDelUrl] = useState('');
+
+  // Comment Editing
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editCommentText, setEditCommentText] = useState('');
 
   // Confirmation Modal State
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -73,6 +80,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       setLinkUrl('');
       setDelTitle('');
       setDelUrl('');
+      setNewComment('');
+      setEditingCommentId(null);
+      setEditCommentText('');
       if (task) {
         setEditedTask({ 
             ...task, 
@@ -137,9 +147,9 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   const handleAddComment = () => {
     if (!newComment.trim() || !editedTask) return;
-    const comment = {
+    const comment: Comment = {
       id: generateId(),
-      author: 'Me', // In a real app, this would be the logged-in user
+      author: currentUser.name, 
       text: newComment,
       timestamp: Date.now(),
     };
@@ -148,6 +158,40 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       comments: [...prev.comments, comment],
     } : null));
     setNewComment('');
+  };
+
+  const handleStartEditComment = (comment: Comment) => {
+    setEditingCommentId(comment.id);
+    setEditCommentText(comment.text);
+  };
+
+  const handleCancelEditComment = () => {
+    setEditingCommentId(null);
+    setEditCommentText('');
+  };
+
+  const handleSaveEditedComment = (commentId: string) => {
+    if (!editCommentText.trim() || !editedTask) return;
+    const updatedComments = editedTask.comments.map(c => 
+      c.id === commentId ? { ...c, text: editCommentText, editedAt: Date.now() } : c
+    );
+    setEditedTask(prev => prev ? { ...prev, comments: updatedComments } : null);
+    setEditingCommentId(null);
+    setEditCommentText('');
+  };
+
+  const handleDeleteComment = (commentId: string) => {
+    if (!editedTask) return;
+    openConfirm(
+      'Delete Comment',
+      'Are you sure you want to delete this comment?',
+      () => {
+        setEditedTask(prev => prev ? {
+          ...prev,
+          comments: prev.comments.filter(c => c.id !== commentId)
+        } : null);
+      }
+    );
   };
 
   const handleAddLink = () => {
@@ -660,15 +704,73 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           <div className="pt-6 border-t border-slate-800">
              <label className="block text-xs font-bold text-slate-400 uppercase mb-3 tracking-wider">Discussion</label>
              <div className="space-y-3 max-h-48 overflow-y-auto mb-4 pr-2 scrollbar-thin">
-                 {editedTask.comments.map(c => (
-                     <div key={c.id} className="bg-slate-800 p-3 rounded-lg text-sm border border-slate-700">
+                 {editedTask.comments.map(c => {
+                   const isAuthor = c.author === currentUser.name || c.author === 'Me';
+                   const isAdmin = currentUser.role === 'Admin';
+                   const canManage = isAuthor || isAdmin;
+                   const isEditing = editingCommentId === c.id;
+
+                   return (
+                     <div key={c.id} className="bg-slate-800 p-3 rounded-lg text-sm border border-slate-700 group">
                          <div className="flex justify-between mb-1">
                              <span className="font-bold text-slate-200">{c.author}</span>
-                             <span className="text-xs text-slate-500">{new Date(c.timestamp).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                             <div className="flex items-center gap-2">
+                               <span className="text-xs text-slate-500">{new Date(c.timestamp).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                               {canManage && !isEditing && (
+                                   <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button 
+                                            onClick={() => handleStartEditComment(c)}
+                                            className="p-1 text-slate-500 hover:text-primary-400 rounded hover:bg-slate-700"
+                                            title="Edit"
+                                        >
+                                            <Edit2 className="w-3 h-3" />
+                                        </button>
+                                        <button 
+                                            onClick={() => handleDeleteComment(c.id)}
+                                            className="p-1 text-slate-500 hover:text-red-400 rounded hover:bg-slate-700"
+                                            title="Delete"
+                                        >
+                                            <Trash2 className="w-3 h-3" />
+                                        </button>
+                                   </div>
+                               )}
+                             </div>
                          </div>
-                         <p className="text-slate-300 leading-relaxed">{c.text}</p>
+                         {isEditing ? (
+                            <div className="mt-2 space-y-2">
+                                <textarea
+                                    value={editCommentText}
+                                    onChange={(e) => setEditCommentText(e.target.value)}
+                                    className="w-full p-2.5 bg-slate-900 border border-slate-600 rounded-lg text-slate-200 outline-none focus:ring-2 focus:ring-primary-500 text-sm resize-none"
+                                    rows={3}
+                                    autoFocus
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <button 
+                                        onClick={handleCancelEditComment}
+                                        className="px-3 py-1.5 text-xs font-bold text-slate-400 hover:bg-slate-700 rounded"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button 
+                                        onClick={() => handleSaveEditedComment(c.id)}
+                                        className="px-3 py-1.5 text-xs font-bold text-white bg-primary-600 hover:bg-primary-700 rounded"
+                                    >
+                                        Save
+                                    </button>
+                                </div>
+                            </div>
+                         ) : (
+                            <>
+                              <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{c.text}</p>
+                              {c.editedAt && (
+                                  <span className="block text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">Edited</span>
+                              )}
+                            </>
+                         )}
                      </div>
-                 ))}
+                   );
+                 })}
                  {editedTask.comments.length === 0 && (
                     <div className="text-center py-4 text-slate-500 text-sm italic bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
                         No comments yet. Start the discussion!

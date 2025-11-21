@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { Card } from './components/Card';
@@ -510,6 +511,7 @@ const App: React.FC = () => {
         task={currentTask}
         allTasks={tasks}
         users={users}
+        currentUser={currentUser}
         onSave={handleTaskSave}
         onDelete={handleTaskDelete}
         swimlanes={swimlanes}

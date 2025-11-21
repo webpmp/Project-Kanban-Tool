@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { StatusUpdate, User, Comment } from '../types';
 import { ArrowLeft, Calendar, ArrowRight, Edit2, Save, X, Trash2, MessageSquare, Send } from 'lucide-react';
@@ -108,7 +109,7 @@ export const StatusUpdateDetail: React.FC<StatusUpdateDetailProps> = ({ update, 
         if (!editCommentText.trim()) return;
         
         const updatedComments = (update.comments || []).map(c => 
-            c.id === commentId ? { ...c, text: editCommentText } : c
+            c.id === commentId ? { ...c, text: editCommentText, editedAt: Date.now() } : c
         );
 
         const updatedUpdate = { ...update, comments: updatedComments };
@@ -376,7 +377,12 @@ export const StatusUpdateDetail: React.FC<StatusUpdateDetailProps> = ({ update, 
                                                                 </div>
                                                             </div>
                                                         ) : (
-                                                            <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.text}</p>
+                                                            <>
+                                                                <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.text}</p>
+                                                                {comment.editedAt && (
+                                                                    <span className="block text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-wider">Edited</span>
+                                                                )}
+                                                            </>
                                                         )}
                                                     </div>
                                                 </div>

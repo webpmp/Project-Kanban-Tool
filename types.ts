@@ -26,6 +26,7 @@ export interface Comment {
   author: string;
   text: string;
   timestamp: number;
+  editedAt?: number;
 }
 
 export interface ProjectLink {
