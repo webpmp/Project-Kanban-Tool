@@ -106,10 +106,12 @@ export const AIAssistant: React.FC<AIAssistantProps> = ({ tasks, users, statusUp
         }
       });
 
+      const cleanText = (response.text || "").replace(/\*\*/g, '');
+
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'model', 
-        text: response.text || "I'm having trouble analyzing the project right now." 
+        text: cleanText || "I'm having trouble analyzing the project right now." 
       };
       
       setMessages(prev => [...prev, aiMsg]);

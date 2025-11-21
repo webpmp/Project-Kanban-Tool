@@ -9,7 +9,7 @@ interface GanttChartProps {
 }
 
 export const GanttChart: React.FC<GanttChartProps> = ({ tasks, onTaskClick }) => {
-  const [dayWidth, setDayWidth] = useState(30);
+  const [dayWidth, setDayWidth] = useState(40);
   const [isFitToScreen, setIsFitToScreen] = useState(false);
   const chartContainerRef = useRef<HTMLDivElement>(null);
 
@@ -33,9 +33,10 @@ export const GanttChart: React.FC<GanttChartProps> = ({ tasks, onTaskClick }) =>
   const maxDate = new Date(maxDateRaw);
   maxDate.setDate(maxDate.getDate() + 14);
 
-  // Normalize to start of week (Sunday)
+  // Normalize to start of week (Sunday) at midnight to ensure accurate daily diffs
   const startOfWeek = (d: Date) => {
       const date = new Date(d);
+      date.setHours(0, 0, 0, 0);
       const day = date.getDay();
       const diff = date.getDate() - day;
       return new Date(date.setDate(diff));
@@ -97,9 +98,8 @@ export const GanttChart: React.FC<GanttChartProps> = ({ tasks, onTaskClick }) =>
     if (chartContainerRef.current) {
         const now = new Date();
         now.setHours(12, 0, 0, 0); // Center alignment
-        // Default dayWidth is 30
         const businessDays = getBusinessDaysDiff(now.getTime(), projectStart.getTime());
-        const initialTodayPos = businessDays * 30;
+        const initialTodayPos = businessDays * 40; // default width 40
         
         const containerWidth = chartContainerRef.current.clientWidth;
         chartContainerRef.current.scrollLeft = initialTodayPos - (containerWidth / 2);
@@ -116,7 +116,7 @@ export const GanttChart: React.FC<GanttChartProps> = ({ tasks, onTaskClick }) =>
           }
       } else {
           setIsFitToScreen(false);
-          setDayWidth(30); // Reset to default
+          setDayWidth(40); // Reset to default
       }
   };
 
