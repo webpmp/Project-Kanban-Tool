@@ -1,20 +1,74 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Gemini Kanban Pro
 
-# Run and deploy your AI Studio app
+A powerful, AI-enhanced Kanban board application built with React, Tailwind CSS, and the Google Gemini API. This tool is designed to streamline workflows, improve team collaboration, and leverage generative AI for project management tasks.
 
-This contains everything you need to run your app locally.
+## Features
 
-View your app in AI Studio: https://ai.studio/apps/drive/1q1kxbL3aCKZzOHEEH35aIQ8s8LWrXXio
+### 🤖 AI-Powered Assistance
+- **Smart Description Enhancement**: Use Gemini to rewrite and expand task descriptions professionally.
+- **Subtask Generation**: Automatically generate concrete subtasks based on task titles.
+- **AI Project Assistant**: A built-in chat agent that has visibility into your board, team, and deadlines to answer questions and provide summaries.
 
-## Run Locally
+### 📊 Project Views
+- **Kanban Board**:
+  - Drag-and-drop interface.
+  - Customizable swimlanes (Backlog, Discover, Define, Concept, Design, Implementation).
+  - Filter and sort by Priority, Due Date, or Assignee.
+- **Gantt Chart**:
+  - Visual timeline for project scheduling.
+  - Zoom controls and "Fit to Screen" functionality.
+  - Dependency visualization.
+- **Project Overview**:
+  - High-level dashboard showing project health, milestones, and documentation links.
+  - Team summary and recent status updates.
 
-**Prerequisites:**  Node.js
+### 👥 Team & Collaboration
+- **Team Management**: Invite, edit, and remove team members.
+- **Role-Based Access**: Support for Admin, Member, and Viewer roles.
+- **Status Updates**: Post Daily, Weekly, or Ad-hoc updates with rich commenting capabilities.
+- **Discussion**: Per-task comment threads for focused communication.
 
+### 🎨 Customization
+- **Themes**: Choose from multiple color themes (Default, Nature, Sunset, Ocean, Midnight).
+- **Project Identity**: Custom project name, description, and logo/icon.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Tech Stack
+
+- **Framework**: React 19 (TypeScript)
+- **Styling**: Tailwind CSS
+- **Icons**: Lucide React
+- **AI Integration**: Google GenAI SDK (`@google/genai`)
+- **Model**: Gemini 2.5 Flash
+
+## Setup & Installation
+
+1. **Environment Setup**
+   Ensure you have a valid Google Gemini API Key.
+
+2. **Install Dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Run Application**
+   ```bash
+   npm start
+   ```
+
+## Usage Guide
+
+### Configuring AI
+The application uses `process.env.API_KEY` to authenticate with Google's GenAI. Ensure this environment variable is set in your runtime environment.
+
+### Task Management
+- Click **New Task** to create a Task or Epic.
+- **Epics** can contain multiple child tasks and are highlighted in the Gantt view.
+- Use the **Enhance** button in the task modal to polish your writing using AI.
+
+### Swimlanes
+- Admins can add, rename, or delete swimlanes directly from the board header.
+- Drag tasks between lanes to update their phase.
+
+## License
+
+This project is open source.
