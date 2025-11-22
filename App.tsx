@@ -13,7 +13,7 @@ import { GanttChart } from './components/GanttChart';
 import { AIAssistant } from './components/AIAssistant';
 import { Task, Swimlane, SortOption, User, TaskType, ProjectDetails, StatusUpdate } from './types';
 import { INITIAL_SWIMLANES, INITIAL_TASKS, PRIORITY_ORDER, MOCK_USERS, INITIAL_STATUS_UPDATES, THEMES } from './constants';
-import { Plus, ArrowUpDown, Settings, Search, Trash2 } from 'lucide-react';
+import { Plus, ArrowUpDown, Settings, Search, Trash2, GripVertical } from 'lucide-react';
 
 const App: React.FC = () => {
   const [currentView, setCurrentView] = useState<'board' | 'team' | 'overview' | 'create-status' | 'status-detail' | 'gantt'>('board');
@@ -144,10 +144,34 @@ const App: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleDrop = (e: React.DragEvent, laneId: string) => {
+  const handleLaneDragStart = (e: React.DragEvent, index: number) => {
+    e.dataTransfer.setData('application/gemini-lane', index.toString());
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleLaneOrTaskDrop = (e: React.DragEvent, laneId: string, dropIndex: number) => {
     e.preventDefault();
+    
+    // 1. Handle Lane Reorder
+    const laneIndexStr = e.dataTransfer.getData('application/gemini-lane');
+    if (laneIndexStr) {
+        const dragIndex = parseInt(laneIndexStr, 10);
+        if (!isNaN(dragIndex) && dragIndex !== dropIndex) {
+            const newSwimlanes = [...swimlanes];
+            const [removed] = newSwimlanes.splice(dragIndex, 1);
+            newSwimlanes.splice(dropIndex, 0, removed);
+            
+            // Update order property and state
+            setSwimlanes(newSwimlanes.map((l, i) => ({ ...l, order: i })));
+        }
+        return;
+    }
+
+    // 2. Handle Task Move
     const taskId = e.dataTransfer.getData('text/plain');
-    setTasks(prev => prev.map(t => t.id === taskId ? { ...t, phase: laneId } : t));
+    if (taskId) {
+        setTasks(prev => prev.map(t => t.id === taskId ? { ...t, phase: laneId } : t));
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -410,49 +434,59 @@ const App: React.FC = () => {
         {/* Board Area */}
         <div className="flex-1 overflow-x-auto overflow-y-hidden p-6">
           <div className="flex gap-6 h-full min-w-max">
-            {swimlanes.map(lane => (
+            {swimlanes.map((lane, index) => (
               <div 
                   key={lane.id} 
                   className="flex flex-col w-80 h-full bg-gray-100/50 rounded-xl border border-gray-200/60 flex-shrink-0 backdrop-blur-sm group/lane"
                   onDragOver={handleDragOver}
-                  onDrop={(e) => handleDrop(e, lane.id)}
+                  onDrop={(e) => handleLaneOrTaskDrop(e, lane.id, index)}
               >
                 {/* Lane Header */}
-                <div className="p-3 flex justify-between items-center border-b border-gray-200 bg-gray-50/80 rounded-t-xl group/header">
-                   {editingLane === lane.id ? (
-                       <input 
-                          autoFocus
-                          className="w-full text-sm font-bold px-2 py-1 rounded border border-primary-400 outline-none bg-white text-slate-900 shadow-sm"
-                          value={newLaneName}
-                          onChange={(e) => setNewLaneName(e.target.value)}
-                          onBlur={saveLaneName}
-                          onKeyDown={(e) => e.key === 'Enter' && saveLaneName()}
-                       />
-                   ) : (
-                       <div 
-                          className="flex items-center gap-2 cursor-pointer group flex-1 min-w-0"
-                          onClick={() => startEditLane(lane)}
-                          title="Click to rename"
-                       >
-                           <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wide truncate">{lane.name}</h2>
-                           <span className="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">{getSortedTasks(lane.id).length}</span>
-                           <Settings className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                       </div>
-                   )}
-
-                   {/* Delete Lane Button - Admin Only */}
+                <div 
+                  className={`p-3 flex items-center border-b border-gray-200 bg-gray-50/80 rounded-t-xl group/header ${currentUser.role === 'Admin' && !editingLane ? 'cursor-grab active:cursor-grabbing' : ''}`}
+                  draggable={currentUser.role === 'Admin' && !editingLane}
+                  onDragStart={(e) => handleLaneDragStart(e, index)}
+                >
                    {currentUser.role === 'Admin' && !editingLane && (
-                       <button 
-                           onClick={(e) => {
-                               e.stopPropagation();
-                               handleDeleteLane(lane.id);
-                           }}
-                           className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-md transition-all opacity-0 group-hover/lane:opacity-100"
-                           title="Delete Swimlane"
-                       >
-                           <Trash2 className="w-3.5 h-3.5" />
-                       </button>
+                       <GripVertical className="w-4 h-4 text-gray-400 mr-2 flex-shrink-0 hover:text-gray-600" />
                    )}
+                   
+                   <div className="flex-1 flex justify-between items-center min-w-0">
+                       {editingLane === lane.id ? (
+                           <input 
+                              autoFocus
+                              className="w-full text-sm font-bold px-2 py-1 rounded border border-primary-400 outline-none bg-white text-slate-900 shadow-sm"
+                              value={newLaneName}
+                              onChange={(e) => setNewLaneName(e.target.value)}
+                              onBlur={saveLaneName}
+                              onKeyDown={(e) => e.key === 'Enter' && saveLaneName()}
+                           />
+                       ) : (
+                           <div 
+                              className="flex items-center gap-2 cursor-pointer group flex-1 min-w-0"
+                              onClick={() => startEditLane(lane)}
+                              title="Click to rename"
+                           >
+                               <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wide truncate">{lane.name}</h2>
+                               <span className="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">{getSortedTasks(lane.id).length}</span>
+                               <Settings className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                           </div>
+                       )}
+
+                       {/* Delete Lane Button - Admin Only */}
+                       {currentUser.role === 'Admin' && !editingLane && (
+                           <button 
+                               onClick={(e) => {
+                                   e.stopPropagation();
+                                   handleDeleteLane(lane.id);
+                               }}
+                               className="ml-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-100 rounded-md transition-all opacity-0 group-hover/lane:opacity-100"
+                               title="Delete Swimlane"
+                           >
+                               <Trash2 className="w-3.5 h-3.5" />
+                           </button>
+                       )}
+                   </div>
                 </div>
 
                 {/* Lane Body */}
