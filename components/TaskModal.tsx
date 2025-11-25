@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Task, TaskType, Priority, TaskStatus, User, Comment } from '../types';
 import { PRIORITY_ORDER } from '../constants';
@@ -301,7 +299,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/70 flex justify-center items-center z-50 overflow-y-auto p-4 backdrop-blur-sm transition-opacity">
-      <div className="bg-slate-900 rounded-xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[90vh] animate-in fade-in zoom-in duration-200 border border-slate-800 text-slate-100">
+      <div className="bg-slate-900 rounded-xl shadow-2xl w-full max-w-3xl flex flex-col max-h-[calc(90vh+5px)] animate-in fade-in zoom-in duration-200 border border-slate-800 text-slate-100">
         
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-slate-800">
@@ -802,11 +800,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                      </div>
                    );
                  })}
-                 {editedTask.comments.length === 0 && (
-                    <div className="text-center py-4 text-slate-500 text-sm italic bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
-                        No comments yet. Start the discussion!
-                    </div>
-                 )}
              </div>
              <div className="flex gap-2">
                  <input

@@ -1,4 +1,5 @@
 
+
 import { Priority, Swimlane, Task, TaskStatus, TaskType, User, StatusUpdate, Theme } from './types';
 
 // Helper for dynamic dates
@@ -76,9 +77,7 @@ export const INITIAL_TASKS: Task[] = [
     tags: ['research'],
     isMilestone: false,
     attributes: { Development: false, IXD: false, VXD: false, MXD: false, UXW: true, QA: false },
-    comments: [
-        { id: 'c1', author: 'Chris Adkins', text: 'Make sure to ask about mobile usage.', timestamp: Date.now() - 10000 }
-    ],
+    comments: [],
     createdAt: Date.now() - 432000000,
   }
 ];
