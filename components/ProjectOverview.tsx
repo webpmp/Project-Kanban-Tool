@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ProjectDetails, User, Task, TaskType, StatusUpdate } from '../types';
+import { ProjectDetails, User, Task, TaskType, StatusUpdate, TaskStatus } from '../types';
 import { ArrowLeft, Calendar, FileText, Link as LinkIcon, Edit2, Save, X, Activity, PlusCircle, ArrowRight, ChevronDown, ChevronRight, FileSpreadsheet, FileCode, FileVideo, FileImage, File, Figma, Trash2, Shield, Flag, CheckCircle2, Clock, Plus, Briefcase } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
@@ -92,6 +92,10 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   const sortedUpdates = [...statusUpdates].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   
   const [expandedUpdateId, setExpandedUpdateId] = useState<string | null>(null);
+
+  const completedTasks = tasks.filter(t => t.status === TaskStatus.COMPLETE).length;
+  const totalTasks = tasks.length;
+  const progress = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
   
   // Confirmation Modal State
   const [confirmConfig, setConfirmConfig] = useState<{
@@ -276,7 +280,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                             </div>
                         ) : (
                             <>
-                                <h1 className="text-4xl font-bold text-gray-900 mb-2">{projectDetails.name}</h1>
+                                <div className="flex justify-between items-start mb-2">
+                                    <h1 className="text-4xl font-bold text-gray-900">{projectDetails.name}</h1>
+                                    <div className="flex flex-col items-end">
+                                        <span className="text-4xl font-bold text-green-600 tracking-tight">{progress}%</span>
+                                        <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Complete</span>
+                                    </div>
+                                </div>
                                 <div className="flex items-center gap-4 text-gray-500 text-sm mb-6">
                                     <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
                                         <Calendar className="w-4 h-4" />
