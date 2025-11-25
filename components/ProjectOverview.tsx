@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { ProjectDetails, User, Task, TaskType, StatusUpdate, TaskStatus } from '../types';
 import { ArrowLeft, Calendar, FileText, Link as LinkIcon, Edit2, Save, X, Activity, PlusCircle, ArrowRight, ChevronDown, ChevronRight, FileSpreadsheet, FileCode, FileVideo, FileImage, File, Figma, Trash2, Shield, Flag, CheckCircle2, Clock, Plus, Briefcase } from 'lucide-react';
@@ -194,6 +195,13 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
             <ArrowLeft className="w-5 h-5" />
             </button>
             <h1 className="text-xl font-bold text-gray-800">Project Overview</h1>
+            <div className="flex flex-col">
+              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Progress</span>
+              <div className="flex items-center gap-1">
+                 <span className="text-lg font-bold text-green-600">{progress}%</span>
+                 <span className="text-xs text-green-600 font-bold uppercase">Complete</span>
+              </div>
+            </div>
         </div>
         
         {isAdmin && !isEditing && (

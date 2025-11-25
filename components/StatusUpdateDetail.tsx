@@ -330,7 +330,7 @@ export const StatusUpdateDetail: React.FC<StatusUpdateDetailProps> = ({ update, 
                                                         <div className="flex justify-between items-center mb-1">
                                                             <span className="font-bold text-sm text-gray-900">{comment.author}</span>
                                                             <div className="flex items-center gap-2">
-                                                                <span className="text-xs text-gray-500">{new Date(comment.timestamp).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                                                                <span className="text-xs text-gray-500">{new Date(comment.timestamp).toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}</span>
                                                                 {canManageComment && !isEditingThis && (
                                                                     <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                                                         <button 
@@ -380,7 +380,7 @@ export const StatusUpdateDetail: React.FC<StatusUpdateDetailProps> = ({ update, 
                                                             <>
                                                                 <p className="text-sm text-gray-700 whitespace-pre-wrap">{comment.text}</p>
                                                                 {comment.editedAt && (
-                                                                    <span className="block text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-wider">Edited</span>
+                                                                    <span className="block text-[10px] text-gray-400 mt-1 font-bold uppercase tracking-wider">EDITED</span>
                                                                 )}
                                                             </>
                                                         )}

@@ -1,4 +1,5 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { Task, TaskType, Priority, TaskStatus, User, Comment } from '../types';
 import { PRIORITY_ORDER } from '../constants';
@@ -700,11 +701,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                          </button>
                      </div>
                  ))}
-                 {(!editedTask.deliverables || editedTask.deliverables.length === 0) && (
-                     <div className="text-sm text-slate-500 italic px-2 border border-dashed border-slate-700/50 rounded p-3 text-center">
-                         No deliverables added.
-                     </div>
-                 )}
              </div>
 
              <div className="flex gap-2 items-center">
@@ -750,7 +746,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                          <div className="flex justify-between mb-1">
                              <span className="font-bold text-slate-200">{c.author}</span>
                              <div className="flex items-center gap-2">
-                               <span className="text-xs text-slate-500">{new Date(c.timestamp).toLocaleString(undefined, { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</span>
+                               <span className="text-xs text-slate-500">{new Date(c.timestamp).toLocaleString(undefined, { hour: '2-digit', minute: '2-digit', month: 'short', day: 'numeric' })}</span>
                                {canManage && !isEditing && (
                                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                         <button 
@@ -799,7 +795,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                             <>
                               <p className="text-slate-300 leading-relaxed whitespace-pre-wrap">{c.text}</p>
                               {c.editedAt && (
-                                  <span className="block text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">Edited</span>
+                                  <span className="block text-[10px] text-slate-500 mt-1 font-bold uppercase tracking-wider">EDITED</span>
                               )}
                             </>
                          )}
