@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Task, TaskType, Priority, TaskStatus, User, Comment } from '../types';
 import { PRIORITY_ORDER } from '../constants';
 import { enhanceTaskDescription, generateSubtasks } from '../services/geminiService';
-import { X, Sparkles, Plus, Trash2, CheckSquare, User as UserIcon, Loader2, Layers, Link as LinkIcon, ExternalLink, Flag, FileText, Edit2 } from 'lucide-react';
+import { X, Sparkles, Plus, Trash2, CheckSquare, User as UserIcon, Loader2, Layers, Link as LinkIcon, ExternalLink, Flag, FileText, Edit2, Copy } from 'lucide-react';
 import { ConfirmModal } from './ConfirmModal';
 
 interface TaskModalProps {
@@ -278,6 +278,23 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               () => onDelete(task.id)
           );
       }
+  };
+
+  const handleDuplicateTask = () => {
+      if (!editedTask) return;
+
+      // Create a deep copy to ensure nested objects/arrays are not shared
+      const taskCopy: Task = JSON.parse(JSON.stringify(editedTask));
+
+      const duplicatedTask: Task = {
+          ...taskCopy,
+          id: generateId(),
+          title: `${taskCopy.title} (Copy)`,
+          comments: [], // Don't copy conversation history
+          createdAt: Date.now()
+      };
+
+      onSave(duplicatedTask);
   };
 
   return (
@@ -800,14 +817,24 @@ export const TaskModal: React.FC<TaskModalProps> = ({
 
         {/* Footer */}
         <div className="p-6 border-t border-slate-800 bg-slate-900/50 rounded-b-xl flex justify-between items-center sticky bottom-0">
-          {task ? (
-             <button 
-                onClick={handleDeleteTask}
-                className="flex items-center gap-2 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg hover:bg-red-900/20 transition-colors text-sm font-bold"
-             >
-                <Trash2 className="w-4 h-4" /> Delete
-             </button>
-          ) : <div></div>}
+          <div className="flex gap-3">
+              {task && (
+                <>
+                 <button 
+                    onClick={handleDeleteTask}
+                    className="flex items-center gap-2 text-red-400 hover:text-red-300 px-4 py-2 rounded-lg hover:bg-red-900/20 transition-colors text-sm font-bold"
+                 >
+                    <Trash2 className="w-4 h-4" /> Delete
+                 </button>
+                 <button 
+                    onClick={handleDuplicateTask}
+                    className="flex items-center gap-2 text-slate-400 hover:text-white px-4 py-2 rounded-lg hover:bg-slate-800 transition-colors text-sm font-bold"
+                 >
+                    <Copy className="w-4 h-4" /> Duplicate
+                 </button>
+                </>
+              )}
+          </div>
           
           <div className="flex gap-3">
              <button 
