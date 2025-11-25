@@ -10,17 +10,20 @@ import { CreateStatusUpdate } from './components/CreateStatusUpdate';
 import { StatusUpdateDetail } from './components/StatusUpdateDetail';
 import { ConfirmModal } from './components/ConfirmModal';
 import { GanttChart } from './components/GanttChart';
+import { CalendarView } from './components/CalendarView';
 import { AIAssistant } from './components/AIAssistant';
-import { Task, Swimlane, SortOption, User, TaskType, ProjectDetails, StatusUpdate } from './types';
-import { INITIAL_SWIMLANES, INITIAL_TASKS, PRIORITY_ORDER, MOCK_USERS, INITIAL_STATUS_UPDATES, THEMES } from './constants';
+import { Task, Swimlane, SortOption, User, TaskType, ProjectDetails, StatusUpdate, CalendarEvent, CategoryDefinition } from './types';
+import { INITIAL_SWIMLANES, INITIAL_TASKS, PRIORITY_ORDER, MOCK_USERS, INITIAL_STATUS_UPDATES, THEMES, INITIAL_CALENDAR_EVENTS, INITIAL_CATEGORIES } from './constants';
 import { Plus, ArrowUpDown, Settings, Search, Trash2, GripVertical } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'board' | 'team' | 'overview' | 'create-status' | 'status-detail' | 'gantt'>('board');
+  const [currentView, setCurrentView] = useState<'board' | 'team' | 'overview' | 'create-status' | 'status-detail' | 'gantt' | 'calendar'>('board');
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [swimlanes, setSwimlanes] = useState<Swimlane[]>(INITIAL_SWIMLANES);
   const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>(INITIAL_STATUS_UPDATES);
+  const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(INITIAL_CALENDAR_EVENTS);
+  const [categories, setCategories] = useState<CategoryDefinition[]>(INITIAL_CATEGORIES);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('priority');
@@ -144,6 +147,31 @@ const App: React.FC = () => {
   const handleTaskClick = (task: Task) => {
     setCurrentTask(task);
     setModalOpen(true);
+  };
+
+  // Calendar Event Handlers
+  const handleAddCalendarEvent = (event: CalendarEvent) => {
+      setCalendarEvents(prev => [...prev, event]);
+  };
+
+  const handleDeleteCalendarEvent = (id: string) => {
+      openConfirm(
+          'Delete Event',
+          'Are you sure you want to delete this event?',
+          () => {
+              setCalendarEvents(prev => prev.filter(e => e.id !== id));
+          }
+      );
+  };
+
+  const handleAddCategory = (category: CategoryDefinition) => {
+      setCategories(prev => [...prev, category]);
+  };
+
+  const handleDeleteCategory = (id: string) => {
+      setCategories(prev => prev.filter(c => c.id !== id));
+      // Optionally clean up events with this category or map them to 'Other'
+      // keeping them for now, they will just lack specific styling or fall back to default
   };
 
   const handleLaneDragStart = (e: React.DragEvent, index: number) => {
@@ -286,11 +314,13 @@ const App: React.FC = () => {
       setCurrentView('status-detail');
   }
   
-  const handleViewModeChange = (mode: 'kanban' | 'gantt' | 'overview') => {
+  const handleViewModeChange = (mode: 'kanban' | 'gantt' | 'overview' | 'calendar') => {
       if (mode === 'gantt') {
           setCurrentView('gantt');
       } else if (mode === 'overview') {
           setCurrentView('overview');
+      } else if (mode === 'calendar') {
+          setCurrentView('calendar');
       } else {
           setCurrentView('board');
       }
@@ -380,6 +410,37 @@ const App: React.FC = () => {
                   onTaskClick={handleTaskClick} 
                   onAddTask={openNewTaskModal}
                   highlightFilter={highlightCriteria}
+                />
+            </div>
+        )
+    }
+
+    if (currentView === 'calendar') {
+        return (
+            <div className="flex flex-col h-screen bg-slate-50 text-slate-900 font-sans">
+                <Dashboard 
+                    tasks={tasks} 
+                    users={users} 
+                    currentUser={currentUser}
+                    projectImage={projectImage}
+                    currentTheme={currentTheme}
+                    onUpdateProjectImage={setProjectImage}
+                    onHighlight={handleHighlight}
+                    onProjectClick={() => setCurrentView('overview')}
+                    currentViewMode="calendar"
+                    onViewModeChange={handleViewModeChange}
+                    onThemeChange={setCurrentTheme}
+                />
+                <CalendarView 
+                    tasks={tasks}
+                    events={calendarEvents}
+                    categories={categories}
+                    onAddEvent={handleAddCalendarEvent}
+                    onDeleteEvent={handleDeleteCalendarEvent}
+                    onTaskClick={handleTaskClick}
+                    onAddCategory={handleAddCategory}
+                    onDeleteCategory={handleDeleteCategory}
+                    currentUser={currentUser}
                 />
             </div>
         )

@@ -110,3 +110,24 @@ export interface Theme {
     secondary: Record<number, string>;
   };
 }
+
+export type CalendarCategory = string;
+
+export interface CategoryDefinition {
+  id: string;
+  label: string;
+  color: string; // Tailwind text class
+  bg: string; // Tailwind bg/border class combo
+  icon: string; // Icon identifier
+  type: 'system' | 'custom';
+}
+
+export interface CalendarEvent {
+  id: string;
+  title: string;
+  startDate: string; // ISO Date
+  endDate: string;   // ISO Date
+  category: CalendarCategory;
+  description?: string;
+  authorId?: string;
+}

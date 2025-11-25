@@ -1,4 +1,5 @@
 
+
 import React, { useState, useRef } from 'react';
 import { Task, User, TaskType, TaskStatus } from '../types';
 import { THEMES } from '../constants';
@@ -14,8 +15,8 @@ interface DashboardProps {
     onUpdateProjectImage: (url: string) => void;
     onHighlight: (criteria: { mode: 'type' | 'status', value: string }) => void;
     onProjectClick: () => void;
-    currentViewMode?: 'kanban' | 'gantt' | 'overview';
-    onViewModeChange?: (mode: 'kanban' | 'gantt' | 'overview') => void;
+    currentViewMode?: 'kanban' | 'gantt' | 'overview' | 'calendar';
+    onViewModeChange?: (mode: 'kanban' | 'gantt' | 'overview' | 'calendar') => void;
     onThemeChange?: (theme: string) => void;
 }
 
@@ -128,12 +129,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <div className="relative flex items-center">
                             <select 
                                 value={currentViewMode}
-                                onChange={(e) => onViewModeChange(e.target.value as 'kanban' | 'gantt' | 'overview')}
+                                onChange={(e) => onViewModeChange(e.target.value as 'kanban' | 'gantt' | 'overview' | 'calendar')}
                                 className="bg-gray-50 border border-gray-200 text-gray-600 text-xs font-bold py-1 pl-3 pr-8 rounded-md cursor-pointer outline-none focus:ring-2 focus:ring-primary-500 appearance-none hover:bg-gray-100 transition-colors min-w-[160px]"
                             >
-                                <option value="kanban">Kanban Board</option>
-                                <option value="gantt">Gantt Chart</option>
-                                <option value="overview">Project Overview</option>
+                                <option value="overview">Overview</option>
+                                <option value="kanban">Kanban</option>
+                                <option value="gantt">Gantt</option>
+                                <option value="calendar">Calendar</option>
                             </select>
                             <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
                         </div>
@@ -141,38 +143,42 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
             </div>
 
-            {/* Stats */}
-            <div className="flex-1 w-full overflow-x-auto flex gap-6 items-center justify-start md:justify-center px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
-                
-                <div 
-                    onClick={() => onHighlight({ mode: 'type', value: TaskType.EPIC })}
-                    className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
-                    title="Click to highlight Epics"
-                >
-                    <span className="text-2xl font-bold text-secondary-600 group-hover:scale-110 transition-transform">{epicsCount}</span>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-secondary-600">Epics</span>
-                </div>
-                <div className="h-8 w-px bg-gray-200"></div>
+            {/* Stats - Hidden in Calendar View */}
+            {currentViewMode !== 'calendar' ? (
+                <div className="flex-1 w-full overflow-x-auto flex gap-6 items-center justify-start md:justify-center px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+                    
+                    <div 
+                        onClick={() => onHighlight({ mode: 'type', value: TaskType.EPIC })}
+                        className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
+                        title="Click to highlight Epics"
+                    >
+                        <span className="text-2xl font-bold text-secondary-600 group-hover:scale-110 transition-transform">{epicsCount}</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-secondary-600">Epics</span>
+                    </div>
+                    <div className="h-8 w-px bg-gray-200"></div>
 
-                <div 
-                    onClick={() => onHighlight({ mode: 'type', value: TaskType.TASK })}
-                    className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
-                    title="Click to highlight Tasks"
-                >
-                    <span className="text-2xl font-bold text-primary-600 group-hover:scale-110 transition-transform">{tasksCount}</span>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-primary-600">Tasks</span>
-                </div>
-                <div className="h-8 w-px bg-gray-200"></div>
+                    <div 
+                        onClick={() => onHighlight({ mode: 'type', value: TaskType.TASK })}
+                        className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
+                        title="Click to highlight Tasks"
+                    >
+                        <span className="text-2xl font-bold text-primary-600 group-hover:scale-110 transition-transform">{tasksCount}</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-primary-600">Tasks</span>
+                    </div>
+                    <div className="h-8 w-px bg-gray-200"></div>
 
-                <div 
-                    onClick={() => onHighlight({ mode: 'status', value: TaskStatus.COMPLETE })}
-                    className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
-                    title="Click to highlight Completed Items"
-                >
-                    <span className="text-2xl font-bold text-green-600 group-hover:scale-110 transition-transform">{progress}%</span>
-                    <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-green-600">Complete</span>
+                    <div 
+                        onClick={() => onHighlight({ mode: 'status', value: TaskStatus.COMPLETE })}
+                        className="flex flex-col items-center min-w-[80px] cursor-pointer hover:bg-gray-50 rounded-lg py-1 transition-colors group"
+                        title="Click to highlight Completed Items"
+                    >
+                        <span className="text-2xl font-bold text-green-600 group-hover:scale-110 transition-transform">{progress}%</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-400 tracking-wider group-hover:text-green-600">Complete</span>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className="flex-1" />
+            )}
             
             {/* Actions & User Info */}
             <div className="hidden md:flex items-center gap-4">

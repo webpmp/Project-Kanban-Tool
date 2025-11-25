@@ -1,6 +1,6 @@
 
 
-import { Priority, Swimlane, Task, TaskStatus, TaskType, User, StatusUpdate, Theme } from './types';
+import { Priority, Swimlane, Task, TaskStatus, TaskType, User, StatusUpdate, Theme, CalendarEvent, CategoryDefinition } from './types';
 
 // Helper for dynamic dates
 const today = new Date();
@@ -77,7 +77,7 @@ export const INITIAL_TASKS: Task[] = [
     tags: ['research'],
     isMilestone: false,
     attributes: { Development: false, IXD: false, VXD: false, MXD: false, UXW: true, QA: false },
-    comments: [],
+    comments: [], // Cleared default comment
     createdAt: Date.now() - 432000000,
   }
 ];
@@ -103,6 +103,44 @@ export const INITIAL_STATUS_UPDATES: StatusUpdate[] = [
         projectStatus: 'On Track',
         comments: []
     }
+];
+
+export const INITIAL_CALENDAR_EVENTS: CalendarEvent[] = [
+    {
+        id: 'e1',
+        title: 'Design Review',
+        startDate: getDate(3),
+        endDate: getDate(3),
+        category: 'Design Review',
+        description: 'Reviewing homepage concepts with stakeholders.'
+    },
+    {
+        id: 'e2',
+        title: 'Team Sync',
+        startDate: getDate(1),
+        endDate: getDate(1),
+        category: 'Meeting',
+        description: 'Weekly team sync up.'
+    },
+    {
+        id: 'e3',
+        title: 'Chris PTO',
+        startDate: getDate(5),
+        endDate: getDate(7),
+        category: 'PTO',
+        description: 'Chris is out of office for long weekend.'
+    }
+];
+
+export const INITIAL_CATEGORIES: CategoryDefinition[] = [
+    { id: 'cat_task', label: 'Task', color: 'text-blue-600', bg: 'bg-blue-100 border-blue-200', icon: 'briefcase', type: 'system' },
+    { id: 'cat_epic', label: 'Epic', color: 'text-purple-600', bg: 'bg-purple-100 border-purple-200', icon: 'layers', type: 'system' },
+    { id: 'cat_milestone', label: 'Milestone', color: 'text-yellow-600', bg: 'bg-yellow-100 border-yellow-200', icon: 'flag', type: 'system' },
+    { id: 'cat_pto', label: 'PTO', color: 'text-green-600', bg: 'bg-green-100 border-green-200', icon: 'coffee', type: 'custom' },
+    { id: 'cat_design', label: 'Design Review', color: 'text-pink-600', bg: 'bg-pink-100 border-pink-200', icon: 'eye', type: 'custom' },
+    { id: 'cat_code', label: 'Code Review', color: 'text-indigo-600', bg: 'bg-indigo-100 border-indigo-200', icon: 'code', type: 'custom' },
+    { id: 'cat_meeting', label: 'Meeting', color: 'text-red-600', bg: 'bg-red-100 border-red-200', icon: 'users', type: 'custom' },
+    { id: 'cat_other', label: 'Other', color: 'text-gray-600', bg: 'bg-gray-100 border-gray-200', icon: 'info', type: 'custom' },
 ];
 
 export const PRIORITY_ORDER = {

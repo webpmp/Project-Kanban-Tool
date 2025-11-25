@@ -92,6 +92,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({
       } else {
         // Default new task
         const today = new Date().toISOString().split('T')[0];
+        
+        // Calculate next work day for default due date
+        const startDateObj = new Date(today);
+        const dayOfWeek = startDateObj.getUTCDay();
+        let daysToAdd = 1;
+        if (dayOfWeek === 5) daysToAdd = 3; // Friday -> Monday
+        else if (dayOfWeek === 6) daysToAdd = 2; // Saturday -> Monday
+        
+        startDateObj.setUTCDate(startDateObj.getUTCDate() + daysToAdd);
+        const defaultDueDate = startDateObj.toISOString().split('T')[0];
+
         setEditedTask({
           id: generateId(),
           type: TaskType.TASK,
@@ -99,7 +110,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
           description: '',
           assignee: '',
           startDate: today,
-          dueDate: today,
+          dueDate: defaultDueDate,
           priority: Priority.MEDIUM,
           status: TaskStatus.NOT_STARTED,
           phase: swimlanes[0]?.id || 'backlog',
