@@ -1,5 +1,3 @@
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Dashboard } from './components/Dashboard';
 import { Card } from './components/Card';
@@ -372,20 +370,37 @@ const App: React.FC = () => {
 
     if (currentView === 'overview') {
       return (
-          <ProjectOverview 
-              projectDetails={projectDetails}
-              users={users}
-              currentUser={currentUser}
-              tasks={tasks}
-              statusUpdates={statusUpdates}
-              onUpdateDetails={setProjectDetails}
-              onBack={() => setCurrentView('board')}
-              onManageTeam={() => setCurrentView('team')}
-              onTaskClick={handleTaskClick}
-              onCreateStatus={() => setCurrentView('create-status')}
-              onViewStatusUpdate={handleViewStatusUpdate}
-              onDeleteStatus={handleDeleteStatusUpdate}
-          />
+          <div className="flex flex-col h-screen bg-slate-50 text-slate-900 font-sans">
+              <Dashboard 
+                    tasks={tasks} 
+                    users={users} 
+                    currentUser={currentUser}
+                    projectImage={projectImage}
+                    currentTheme={currentTheme}
+                    onUpdateProjectImage={setProjectImage}
+                    onHighlight={handleHighlight}
+                    onProjectClick={() => {}}
+                    currentViewMode="overview"
+                    onViewModeChange={handleViewModeChange}
+                    onThemeChange={setCurrentTheme}
+                />
+              <div className="flex-1 overflow-y-auto">
+                <ProjectOverview 
+                    projectDetails={projectDetails}
+                    users={users}
+                    currentUser={currentUser}
+                    tasks={tasks}
+                    statusUpdates={statusUpdates}
+                    onUpdateDetails={setProjectDetails}
+                    onBack={() => {}}
+                    onManageTeam={() => setCurrentView('team')}
+                    onTaskClick={handleTaskClick}
+                    onCreateStatus={() => setCurrentView('create-status')}
+                    onViewStatusUpdate={handleViewStatusUpdate}
+                    onDeleteStatus={handleDeleteStatusUpdate}
+                />
+              </div>
+          </div>
       )
     }
     
@@ -535,7 +550,7 @@ const App: React.FC = () => {
                               onClick={() => startEditLane(lane)}
                               title="Click to rename"
                            >
-                               <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wide truncate">{lane.name}</h2>
+                               <h2 className="font-bold text-gray-700 text-sm uppercase tracking-wider truncate">{lane.name}</h2>
                                <span className="bg-gray-200 text-gray-600 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0">{getSortedTasks(lane.id).length}</span>
                                <Settings className="w-3 h-3 text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                            </div>

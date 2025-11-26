@@ -118,28 +118,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <BarChart3 className="w-6 h-6" />
                     )}
                 </div>
-                <div className="flex flex-col gap-1">
-                    <div onClick={onProjectClick} className="cursor-pointer group">
-                        <h1 className="text-lg font-bold text-gray-800 leading-tight group-hover:text-primary-600 transition-colors flex items-center gap-2">
-                            Gemini Kanban
-                        </h1>
-                    </div>
-                    
-                    {onViewModeChange && (
-                        <div className="relative flex items-center">
-                            <select 
-                                value={currentViewMode}
-                                onChange={(e) => onViewModeChange(e.target.value as 'kanban' | 'gantt' | 'overview' | 'calendar')}
-                                className="bg-gray-50 border border-gray-200 text-gray-600 text-xs font-bold py-1 pl-3 pr-8 rounded-md cursor-pointer outline-none focus:ring-2 focus:ring-primary-500 appearance-none hover:bg-gray-100 transition-colors min-w-[160px]"
-                            >
-                                <option value="overview">Overview</option>
-                                <option value="kanban">Kanban</option>
-                                <option value="gantt">Gantt</option>
-                                <option value="calendar">Calendar</option>
-                            </select>
-                            <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-500 pointer-events-none" />
-                        </div>
-                    )}
+                <div onClick={onProjectClick} className="cursor-pointer group">
+                    <h1 className="text-lg font-bold text-gray-800 leading-tight group-hover:text-primary-600 transition-colors flex items-center gap-2">
+                        Gemini Kanban
+                    </h1>
                 </div>
             </div>
 
@@ -180,15 +162,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 <div className="flex-1" />
             )}
             
-            {/* Actions & User Info */}
+            {/* Actions & User Info Replaced by View Selector */}
             <div className="hidden md:flex items-center gap-4">
-               <div className="flex items-center gap-2 text-xs bg-gray-50 rounded-full pl-1 pr-3 py-1 border border-gray-200">
-                   <img src={currentUser.avatarUrl} className="w-6 h-6 rounded-full" alt="Current User" />
-                   <div className="flex flex-col">
-                       <span className="font-bold text-gray-700 leading-none">{currentUser.name}</span>
-                       <span className="text-[9px] text-gray-500 leading-none">{currentUser.role}</span>
-                   </div>
-               </div>
+                {onViewModeChange && (
+                    <div className="relative flex items-center">
+                        <select 
+                            value={currentViewMode}
+                            onChange={(e) => onViewModeChange(e.target.value as 'kanban' | 'gantt' | 'overview' | 'calendar')}
+                            className="bg-gray-50 border border-gray-200 text-gray-600 text-xs font-bold py-2 pl-3 pr-8 rounded-lg cursor-pointer outline-none focus:ring-2 focus:ring-primary-500 appearance-none hover:bg-gray-100 transition-colors min-w-[140px]"
+                        >
+                            <option value="overview">Overview</option>
+                            <option value="kanban">Kanban</option>
+                            <option value="gantt">Gantt</option>
+                            <option value="calendar">Calendar</option>
+                        </select>
+                        <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+                    </div>
+                )}
             </div>
 
         </div>

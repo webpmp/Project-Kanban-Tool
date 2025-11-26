@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { ProjectDetails, User, Task, TaskType, StatusUpdate, TaskStatus } from '../types';
 import { ArrowLeft, Calendar, FileText, Link as LinkIcon, Edit2, Save, X, Activity, PlusCircle, ArrowRight, ChevronDown, ChevronRight, FileSpreadsheet, FileCode, FileVideo, FileImage, File, Figma, Trash2, Shield, Flag, CheckCircle2, Clock, Plus, Briefcase } from 'lucide-react';
@@ -184,55 +182,42 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      {/* Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
-        <div className="flex items-center gap-4">
-            <button 
-            onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
-            >
-            <ArrowLeft className="w-5 h-5" />
-            </button>
-            <h1 className="text-xl font-bold text-gray-800">Project Overview</h1>
-            <div className="flex flex-col">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Progress</span>
-              <div className="flex items-center gap-1">
-                 <span className="text-lg font-bold text-green-600">{progress}%</span>
-                 <span className="text-xs text-green-600 font-bold uppercase">Complete</span>
-              </div>
-            </div>
+    <div className="flex-1 bg-slate-50 flex flex-col">
+      <div className="max-w-6xl mx-auto w-full p-6">
+        
+        {/* Title and Actions */}
+        <div className="flex items-center justify-between mb-6">
+             <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
+             
+             <div>
+                {isAdmin && !isEditing && (
+                    <button 
+                        onClick={() => setIsEditing(true)}
+                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg font-bold text-sm transition-colors"
+                    >
+                        <Edit2 className="w-4 h-4" /> Edit Details
+                    </button>
+                )}
+
+                {isEditing && (
+                    <div className="flex gap-2">
+                        <button 
+                            onClick={handleCancel}
+                            className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold text-sm transition-colors"
+                        >
+                            Cancel
+                        </button>
+                        <button 
+                            onClick={handleSave}
+                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold text-sm transition-colors shadow-sm"
+                        >
+                            <Save className="w-4 h-4" /> Save Changes
+                        </button>
+                    </div>
+                )}
+             </div>
         </div>
-        
-        {isAdmin && !isEditing && (
-             <button 
-                onClick={() => setIsEditing(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg font-bold text-sm transition-colors"
-             >
-                 <Edit2 className="w-4 h-4" /> Edit Details
-             </button>
-        )}
 
-        {isEditing && (
-            <div className="flex gap-2">
-                <button 
-                    onClick={handleCancel}
-                    className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold text-sm transition-colors"
-                >
-                    Cancel
-                </button>
-                <button 
-                    onClick={handleSave}
-                    className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold text-sm transition-colors shadow-sm"
-                >
-                    <Save className="w-4 h-4" /> Save Changes
-                </button>
-            </div>
-        )}
-      </div>
-
-      <div className="flex-1 max-w-6xl mx-auto w-full p-6">
-        
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Main Content (Project Details, Documentation & Milestones) */}

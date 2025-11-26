@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import { Task, CalendarEvent, CalendarCategory, TaskType, CategoryDefinition, User } from '../types';
 import { ChevronLeft, ChevronRight, Plus, X, Calendar as CalendarIcon, Flag, Layers, Briefcase, Code, Eye, Coffee, Users, Info, Tag, Trash2, Check, ChevronsRight, StopCircle, Clock } from 'lucide-react';
@@ -39,6 +37,11 @@ const COLOR_PRESETS = [
     { name: 'Gray', text: 'text-gray-600', bg: 'bg-gray-100 border-gray-200' },
     { name: 'Orange', text: 'text-orange-600', bg: 'bg-orange-100 border-orange-200' },
     { name: 'Teal', text: 'text-teal-600', bg: 'bg-teal-100 border-teal-200' },
+    { name: 'Cyan', text: 'text-cyan-600', bg: 'bg-cyan-100 border-cyan-200' },
+    { name: 'Lime', text: 'text-lime-600', bg: 'bg-lime-100 border-lime-200' },
+    { name: 'Fuchsia', text: 'text-fuchsia-600', bg: 'bg-fuchsia-100 border-fuchsia-200' },
+    { name: 'Rose', text: 'text-rose-600', bg: 'bg-rose-100 border-rose-200' },
+    { name: 'Amber', text: 'text-amber-600', bg: 'bg-amber-100 border-amber-200' },
 ];
 
 export const CalendarView: React.FC<CalendarViewProps> = ({ 
@@ -234,32 +237,37 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                          // Default to Tag icon if not found
                          const Icon = ICON_MAP[cat.icon] || Tag;
                          return (
-                            <div key={cat.id} className="flex items-center justify-between group">
-                                <div 
-                                    className="flex items-center gap-3 cursor-pointer flex-1" 
-                                    onClick={() => handleToggleCategory(cat.label)}
-                                >
-                                    <div className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${visibleCategories[cat.label] !== false ? 'bg-primary-600 text-white' : 'bg-gray-200 text-transparent'}`}>
-                                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                                        </svg>
+                            <React.Fragment key={cat.id}>
+                                <div className="flex items-center justify-between group">
+                                    <div 
+                                        className="flex items-center gap-3 cursor-pointer flex-1" 
+                                        onClick={() => handleToggleCategory(cat.label)}
+                                    >
+                                        <div className={`w-4 h-4 rounded flex items-center justify-center transition-colors ${visibleCategories[cat.label] !== false ? 'bg-primary-600 text-white' : 'bg-gray-200 text-transparent'}`}>
+                                            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                            </svg>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700 truncate">{cat.label}</span>
                                     </div>
-                                    <span className="text-sm font-medium text-gray-700 truncate">{cat.label}</span>
+                                    
+                                    <div className="flex items-center gap-2">
+                                        <div className={`w-2 h-2 rounded-full ${cat.bg.split(' ')[0].replace('bg-', 'bg-').replace('100', '500')}`}></div>
+                                        {isAdmin && cat.type === 'custom' && (
+                                            <button 
+                                                onClick={() => onDeleteCategory(cat.id)}
+                                                className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                title="Delete Filter"
+                                            >
+                                                <Trash2 className="w-3 h-3" />
+                                            </button>
+                                        )}
+                                    </div>
                                 </div>
-                                
-                                <div className="flex items-center gap-2">
-                                    <div className={`w-2 h-2 rounded-full ${cat.bg.split(' ')[0].replace('bg-', 'bg-').replace('100', '500')}`}></div>
-                                    {isAdmin && cat.type === 'custom' && (
-                                        <button 
-                                            onClick={() => onDeleteCategory(cat.id)}
-                                            className="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            title="Delete Filter"
-                                        >
-                                            <Trash2 className="w-3 h-3" />
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
+                                {cat.label === 'Milestone' && (
+                                    <div className="h-px bg-gray-200"></div>
+                                )}
+                            </React.Fragment>
                         );
                     })}
                 </div>
@@ -534,19 +542,26 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
 
                         <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-2 tracking-wider">Color Code</label>
-                            <div className="grid grid-cols-5 gap-2">
-                                {COLOR_PRESETS.map((preset, idx) => (
-                                    <button
-                                        key={idx}
-                                        onClick={() => setNewCategory({...newCategory, colorIndex: idx})}
-                                        className={`w-full aspect-square rounded-full border-2 transition-all ${
-                                            preset.bg.split(' ')[0]
-                                        } ${newCategory.colorIndex === idx ? 'border-gray-900 scale-110' : 'border-transparent hover:scale-105'}`}
-                                        title={preset.name}
-                                    >
-                                        {newCategory.colorIndex === idx && <Check className={`w-4 h-4 mx-auto ${preset.text}`} />}
-                                    </button>
-                                ))}
+                            <div className="grid grid-cols-5 gap-x-2 gap-y-3">
+                                {COLOR_PRESETS.map((preset, idx) => {
+                                    const existingCat = categories.find(c => c.bg === preset.bg);
+                                    return (
+                                        <div key={idx} className="flex flex-col items-center">
+                                            <button
+                                                onClick={() => setNewCategory({...newCategory, colorIndex: idx})}
+                                                className={`w-full aspect-square rounded-full transition-all ${
+                                                    preset.bg.split(' ')[0]
+                                                } ${newCategory.colorIndex === idx ? 'scale-110' : 'border border-gray-300 hover:scale-105'}`}
+                                                title={preset.name}
+                                            >
+                                                {newCategory.colorIndex === idx && <Check className={`w-4 h-4 mx-auto ${preset.text}`} />}
+                                            </button>
+                                            <span className="mt-1 text-[9px] text-gray-400 font-medium text-center truncate w-full h-3 leading-none">
+                                                {existingCat?.label || ''}
+                                            </span>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
 

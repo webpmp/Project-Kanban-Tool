@@ -138,7 +138,7 @@ export const INITIAL_CATEGORIES: CategoryDefinition[] = [
     { id: 'cat_milestone', label: 'Milestone', color: 'text-yellow-600', bg: 'bg-yellow-100 border-yellow-200', icon: 'flag', type: 'system' },
     { id: 'cat_pto', label: 'PTO', color: 'text-green-600', bg: 'bg-green-100 border-green-200', icon: 'coffee', type: 'custom' },
     { id: 'cat_design', label: 'Design Review', color: 'text-pink-600', bg: 'bg-pink-100 border-pink-200', icon: 'eye', type: 'custom' },
-    { id: 'cat_code', label: 'Code Review', color: 'text-indigo-600', bg: 'bg-indigo-100 border-indigo-200', icon: 'code', type: 'custom' },
+    { id: 'cat_workshop', label: 'Workshop', color: 'text-indigo-600', bg: 'bg-indigo-100 border-indigo-200', icon: 'users', type: 'custom' },
     { id: 'cat_meeting', label: 'Meeting', color: 'text-red-600', bg: 'bg-red-100 border-red-200', icon: 'users', type: 'custom' },
     { id: 'cat_other', label: 'Other', color: 'text-gray-600', bg: 'bg-gray-100 border-gray-200', icon: 'info', type: 'custom' },
 ];
