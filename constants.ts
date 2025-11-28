@@ -1,6 +1,6 @@
 
 
-import { Priority, Swimlane, Task, TaskStatus, TaskType, User, StatusUpdate, Theme, CalendarEvent, CategoryDefinition } from './types';
+import { Priority, Swimlane, Task, TaskStatus, TaskType, User, StatusUpdate, Theme, CalendarEvent, CategoryDefinition, MeetingNote } from './types';
 
 // Helper for dynamic dates
 const today = new Date();
@@ -101,6 +101,58 @@ export const INITIAL_STATUS_UPDATES: StatusUpdate[] = [
         type: 'Ad-hoc',
         content: 'After evaluating React vs Vue, the team has decided to proceed with React for better scalability and component reusability.',
         projectStatus: 'On Track',
+        comments: []
+    }
+];
+
+export const INITIAL_MEETING_NOTES: MeetingNote[] = [
+    {
+        id: 'm1',
+        title: 'Project Kickoff',
+        date: getDate(-15),
+        createdAt: Date.now() - 1296000000,
+        lastModified: Date.now() - 1296000000,
+        content: `# Purpose/Goals
+- Align on project scope and timelines for the Website Redesign.
+- Assign initial roles and responsibilities.
+
+# Decisions
+- **Methodology**: We will use a hybrid Kanban/Agile approach.
+- **Tech Stack**: React for frontend, Node.js for backend.
+- **Cadence**: Weekly syncs on Mondays at 10 AM.
+
+# Action Items
+- [x] Create project board (Chris)
+- [ ] Set up dev environment (Bob)
+- [ ] Schedule user interviews (Charlie)
+
+# Attendees
+- Chris Adkins
+- Bob Smith
+- Charlie Kim
+- Diana Prince`,
+        comments: []
+    },
+    {
+        id: 'm2',
+        title: 'Design Critique',
+        date: getDate(-3),
+        createdAt: Date.now() - 259200000,
+        lastModified: Date.now() - 259200000,
+        content: `# Purpose/Goals
+- Review initial wireframes.
+
+# Decisions
+- Homepage needs more emphasis on the "Contact Us" CTA.
+- Navigation bar feels too cluttered.
+
+# Action Items
+- [ ] Update wireframes based on feedback (Charlie)
+- [ ] Share new version by Friday (Charlie)
+
+# Attendees
+- Chris Adkins
+- Charlie Kim`,
         comments: []
     }
 ];

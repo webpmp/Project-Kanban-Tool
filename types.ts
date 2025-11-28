@@ -131,3 +131,13 @@ export interface CalendarEvent {
   description?: string;
   authorId?: string;
 }
+
+export interface MeetingNote {
+  id: string;
+  title: string;
+  date: string; // ISO Date
+  content: string; // Markdown supported
+  createdAt: number;
+  lastModified: number;
+  comments: Comment[];
+}

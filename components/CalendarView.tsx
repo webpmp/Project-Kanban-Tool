@@ -265,7 +265,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({
                                     </div>
                                 </div>
                                 {cat.label === 'Milestone' && (
-                                    <div className="h-px bg-gray-200"></div>
+                                    <div className="h-px bg-gray-200 my-3"></div>
                                 )}
                             </React.Fragment>
                         );

@@ -15,8 +15,8 @@ interface DashboardProps {
     onUpdateProjectImage: (url: string) => void;
     onHighlight: (criteria: { mode: 'type' | 'status', value: string }) => void;
     onProjectClick: () => void;
-    currentViewMode?: 'kanban' | 'gantt' | 'overview' | 'calendar';
-    onViewModeChange?: (mode: 'kanban' | 'gantt' | 'overview' | 'calendar') => void;
+    currentViewMode?: 'kanban' | 'gantt' | 'overview' | 'calendar' | 'meetings';
+    onViewModeChange?: (mode: 'kanban' | 'gantt' | 'overview' | 'calendar' | 'meetings') => void;
     onThemeChange?: (theme: string) => void;
 }
 
@@ -125,8 +125,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
             </div>
 
-            {/* Stats - Hidden in Calendar View */}
-            {currentViewMode !== 'calendar' ? (
+            {/* Stats - Hidden in Calendar/Meetings View */}
+            {currentViewMode !== 'calendar' && currentViewMode !== 'meetings' ? (
                 <div className="flex-1 w-full overflow-x-auto flex gap-6 items-center justify-start md:justify-center px-4 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
                     
                     <div 
@@ -168,13 +168,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <div className="relative flex items-center">
                         <select 
                             value={currentViewMode}
-                            onChange={(e) => onViewModeChange(e.target.value as 'kanban' | 'gantt' | 'overview' | 'calendar')}
+                            onChange={(e) => onViewModeChange(e.target.value as any)}
                             className="bg-gray-50 border border-gray-200 text-gray-600 text-xs font-bold py-2 pl-3 pr-8 rounded-lg cursor-pointer outline-none focus:ring-2 focus:ring-primary-500 appearance-none hover:bg-gray-100 transition-colors min-w-[140px]"
                         >
                             <option value="overview">Overview</option>
                             <option value="kanban">Kanban</option>
                             <option value="gantt">Gantt</option>
                             <option value="calendar">Calendar</option>
+                            <option value="meetings">Meetings</option>
                         </select>
                         <ChevronDown className="absolute right-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
                     </div>

@@ -188,34 +188,6 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
         {/* Title and Actions */}
         <div className="flex items-center justify-between mb-6">
              <h2 className="text-2xl font-bold text-gray-800">Overview</h2>
-             
-             <div>
-                {isAdmin && !isEditing && (
-                    <button 
-                        onClick={() => setIsEditing(true)}
-                        className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg font-bold text-sm transition-colors"
-                    >
-                        <Edit2 className="w-4 h-4" /> Edit Details
-                    </button>
-                )}
-
-                {isEditing && (
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={handleCancel}
-                            className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold text-sm transition-colors"
-                        >
-                            Cancel
-                        </button>
-                        <button 
-                            onClick={handleSave}
-                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold text-sm transition-colors shadow-sm"
-                        >
-                            <Save className="w-4 h-4" /> Save Changes
-                        </button>
-                    </div>
-                )}
-             </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -231,16 +203,33 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                     
                     <div className="relative z-0">
                         {isEditing ? (
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-400 uppercase mb-1 tracking-wider">Project Name</label>
-                                    <input 
-                                        type="text" 
-                                        value={editedDetails.name}
-                                        onChange={(e) => setEditedDetails({...editedDetails, name: e.target.value})}
-                                        className="w-full text-3xl font-bold text-gray-900 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none"
-                                    />
+                             <div className="space-y-4">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div className="w-full mr-4">
+                                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1 tracking-wider">Project Name</label>
+                                        <input 
+                                            type="text" 
+                                            value={editedDetails.name}
+                                            onChange={(e) => setEditedDetails({...editedDetails, name: e.target.value})}
+                                            className="w-full text-3xl font-bold text-gray-900 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 focus:ring-2 focus:ring-primary-500 outline-none"
+                                        />
+                                    </div>
+                                    <div className="flex items-center gap-2 flex-shrink-0 mt-6">
+                                        <button 
+                                            onClick={handleCancel}
+                                            className="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg font-bold text-sm transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button 
+                                            onClick={handleSave}
+                                            className="flex items-center gap-2 px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-bold text-sm transition-colors shadow-sm"
+                                        >
+                                            <Save className="w-4 h-4" /> Save
+                                        </button>
+                                    </div>
                                 </div>
+                                
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
                                         <label className="block text-xs font-bold text-gray-400 uppercase mb-1 tracking-wider">Start Date</label>
@@ -274,12 +263,17 @@ export const ProjectOverview: React.FC<ProjectOverviewProps> = ({
                         ) : (
                             <>
                                 <div className="flex justify-between items-start mb-2">
-                                    <h1 className="text-4xl font-bold text-gray-900">{projectDetails.name}</h1>
-                                    <div className="flex flex-col items-end">
-                                        <span className="text-4xl font-bold text-green-600 tracking-tight">{progress}%</span>
-                                        <span className="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Complete</span>
-                                    </div>
+                                    <h1 className="text-4xl font-bold text-gray-900 mb-2">{projectDetails.name}</h1>
+                                    {isAdmin && (
+                                        <button 
+                                            onClick={() => setIsEditing(true)}
+                                            className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 rounded-lg font-bold text-sm transition-colors shadow-sm"
+                                        >
+                                            <Edit2 className="w-4 h-4" /> Edit Details
+                                        </button>
+                                    )}
                                 </div>
+
                                 <div className="flex items-center gap-4 text-gray-500 text-sm mb-6">
                                     <div className="flex items-center gap-1.5 bg-gray-50 px-3 py-1 rounded-full border border-gray-100">
                                         <Calendar className="w-4 h-4" />

@@ -9,19 +9,21 @@ import { StatusUpdateDetail } from './components/StatusUpdateDetail';
 import { ConfirmModal } from './components/ConfirmModal';
 import { GanttChart } from './components/GanttChart';
 import { CalendarView } from './components/CalendarView';
+import { MeetingNotes } from './components/MeetingNotes';
 import { AIAssistant } from './components/AIAssistant';
-import { Task, Swimlane, SortOption, User, TaskType, ProjectDetails, StatusUpdate, CalendarEvent, CategoryDefinition } from './types';
-import { INITIAL_SWIMLANES, INITIAL_TASKS, PRIORITY_ORDER, MOCK_USERS, INITIAL_STATUS_UPDATES, THEMES, INITIAL_CALENDAR_EVENTS, INITIAL_CATEGORIES } from './constants';
+import { Task, Swimlane, SortOption, User, TaskType, ProjectDetails, StatusUpdate, CalendarEvent, CategoryDefinition, MeetingNote } from './types';
+import { INITIAL_SWIMLANES, INITIAL_TASKS, PRIORITY_ORDER, MOCK_USERS, INITIAL_STATUS_UPDATES, THEMES, INITIAL_CALENDAR_EVENTS, INITIAL_CATEGORIES, INITIAL_MEETING_NOTES } from './constants';
 import { Plus, ArrowUpDown, Settings, Search, Trash2, GripVertical } from 'lucide-react';
 
 const App: React.FC = () => {
-  const [currentView, setCurrentView] = useState<'board' | 'team' | 'overview' | 'create-status' | 'status-detail' | 'gantt' | 'calendar'>('board');
+  const [currentView, setCurrentView] = useState<'board' | 'team' | 'overview' | 'create-status' | 'status-detail' | 'gantt' | 'calendar' | 'meetings'>('board');
   const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [swimlanes, setSwimlanes] = useState<Swimlane[]>(INITIAL_SWIMLANES);
   const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>(INITIAL_STATUS_UPDATES);
   const [calendarEvents, setCalendarEvents] = useState<CalendarEvent[]>(INITIAL_CALENDAR_EVENTS);
   const [categories, setCategories] = useState<CategoryDefinition[]>(INITIAL_CATEGORIES);
+  const [meetingNotes, setMeetingNotes] = useState<MeetingNote[]>(INITIAL_MEETING_NOTES);
   const [modalOpen, setModalOpen] = useState(false);
   const [currentTask, setCurrentTask] = useState<Task | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>('priority');
@@ -172,6 +174,19 @@ const App: React.FC = () => {
       // keeping them for now, they will just lack specific styling or fall back to default
   };
 
+  // Meeting Notes Handlers
+  const handleAddMeetingNote = (note: MeetingNote) => {
+      setMeetingNotes(prev => [note, ...prev]);
+  };
+
+  const handleUpdateMeetingNote = (note: MeetingNote) => {
+      setMeetingNotes(prev => prev.map(n => n.id === note.id ? note : n));
+  };
+
+  const handleDeleteMeetingNote = (id: string) => {
+      setMeetingNotes(prev => prev.filter(n => n.id !== id));
+  };
+
   const handleLaneDragStart = (e: React.DragEvent, index: number) => {
     e.dataTransfer.setData('application/gemini-lane', index.toString());
     e.dataTransfer.effectAllowed = 'move';
@@ -312,13 +327,15 @@ const App: React.FC = () => {
       setCurrentView('status-detail');
   }
   
-  const handleViewModeChange = (mode: 'kanban' | 'gantt' | 'overview' | 'calendar') => {
+  const handleViewModeChange = (mode: 'kanban' | 'gantt' | 'overview' | 'calendar' | 'meetings') => {
       if (mode === 'gantt') {
           setCurrentView('gantt');
       } else if (mode === 'overview') {
           setCurrentView('overview');
       } else if (mode === 'calendar') {
           setCurrentView('calendar');
+      } else if (mode === 'meetings') {
+          setCurrentView('meetings');
       } else {
           setCurrentView('board');
       }
@@ -456,6 +473,33 @@ const App: React.FC = () => {
                     onAddCategory={handleAddCategory}
                     onDeleteCategory={handleDeleteCategory}
                     currentUser={currentUser}
+                />
+            </div>
+        )
+    }
+
+    if (currentView === 'meetings') {
+        return (
+            <div className="flex flex-col h-screen bg-slate-50 text-slate-900 font-sans">
+                <Dashboard 
+                    tasks={tasks} 
+                    users={users} 
+                    currentUser={currentUser}
+                    projectImage={projectImage}
+                    currentTheme={currentTheme}
+                    onUpdateProjectImage={setProjectImage}
+                    onHighlight={handleHighlight}
+                    onProjectClick={() => setCurrentView('overview')}
+                    currentViewMode="meetings"
+                    onViewModeChange={handleViewModeChange}
+                    onThemeChange={setCurrentTheme}
+                />
+                <MeetingNotes 
+                    notes={meetingNotes}
+                    currentUser={currentUser}
+                    onAddNote={handleAddMeetingNote}
+                    onUpdateNote={handleUpdateMeetingNote}
+                    onDeleteNote={handleDeleteMeetingNote}
                 />
             </div>
         )
@@ -649,6 +693,9 @@ const App: React.FC = () => {
         onCancel={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))}
         isDangerous={confirmConfig.isDangerous}
       />
+      <div className="fixed bottom-3 w-full text-center text-[10px] font-medium text-slate-400 pointer-events-none z-[40] opacity-60">
+        Gemini Kanban by Chris Adkins
+      </div>
     </>
   );
 };
